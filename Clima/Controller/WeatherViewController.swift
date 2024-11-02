@@ -15,6 +15,8 @@ class WeatherViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var cityLabel: UILabel!
     @IBOutlet weak var searchTextField: UITextField!
     
+    var weatherManager = WeatherManager()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
@@ -42,8 +44,13 @@ class WeatherViewController: UIViewController, UITextFieldDelegate {
     
     func textFieldDidEndEditing(_ textField: UITextField) {
         // use searchTextField. text to get the weather for that city
+        if let city = searchTextField.text{
+            weatherManager.fetchWheather(cityName: city)
+        }
         searchTextField.text = ""
     }
     
 }
+
+// clima API key a5b8576992f8896ea47de3590c10ef2c
 
