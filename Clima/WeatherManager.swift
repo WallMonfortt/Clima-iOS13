@@ -8,8 +8,14 @@
 
 import Foundation
 
+protocol WeatherManagerDelegate {
+    func didUpdateWeather(weather: WeatherModel)
+}
+
 struct WeatherManager {
     let weatherURL = ""
+    
+    var delegate: WeatherManagerDelegate?
     
     func fetchWheather(cityName: String){
         let urlString = "\(weatherURL)&q=\(cityName)"
@@ -30,7 +36,10 @@ struct WeatherManager {
                 }
                 
                 if let safeData = data{
-                    self.parseJSON(weatherData: safeData) // in newest version of swift seems self is unnecessary
+                    // in newest version of swift seems self is unnecessary
+                    if let weather = self.parseJSON(weatherData: safeData){
+                        self.delegate?.didUpdateWeather(weather: weather)
+                    }
                 }
             }
             //            4.- start a task
@@ -38,16 +47,27 @@ struct WeatherManager {
         }
     }
     
-    func parseJSON(weatherData: Data){
+    func parseJSON(weatherData: Data) -> WeatherModel?{
         let decoder = JSONDecoder()
         do {
             let decodedData = try decoder.decode(WeatherData.self, from: weatherData)
             print(decodedData.name)
             print(decodedData.main.temp)
             print(decodedData.weather[0].description)
+            
+            let id = decodedData.weather[0].id
+            let temp = decodedData.main.temp
+            let name = decodedData.name
+            
+            let weather = WeatherModel(conditionId: id, cityName: name, temperature: temp)
+            
+            print(weather.conditionName)
+            print(weather.temperatureString)
+            return weather
         } catch {
             print(error)
+            return nil
         }
-        }
-       
+    }
+    
 }
