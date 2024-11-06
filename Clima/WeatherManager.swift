@@ -9,21 +9,22 @@
 import Foundation
 
 protocol WeatherManagerDelegate {
-    func didUpdateWeather(weather: WeatherModel)
+    func didUpdateWeather(_ weatherManager :WeatherManager, weather: WeatherModel)
+    func didFailWithError(error: Error)
 }
 
 struct WeatherManager {
-    let weatherURL = ""
+    let weatherURL = "https://api.openweathermap.org/data/2.5/weather?appid="
     
     var delegate: WeatherManagerDelegate?
     
     func fetchWheather(cityName: String){
         let urlString = "\(weatherURL)&q=\(cityName)"
         print(urlString)
-        performRequest(urlString: urlString)
+        performRequest(with: urlString)
     }
     
-    func performRequest(urlString: String){
+    func performRequest(with urlString: String){
         //        1.- Create URl
         if let url = URL(string: urlString){
             //            2.- Create Url session
@@ -32,13 +33,14 @@ struct WeatherManager {
             let task = session.dataTask(with: url) { data, response, error in
                 if error != nil{
                     print(error!)
+                    self.delegate?.didFailWithError(error: error!)
                     return
                 }
                 
                 if let safeData = data{
                     // in newest version of swift seems self is unnecessary
-                    if let weather = self.parseJSON(weatherData: safeData){
-                        self.delegate?.didUpdateWeather(weather: weather)
+                    if let weather = self.parseJSON(safeData){
+                        self.delegate?.didUpdateWeather(self, weather: weather) //
                     }
                 }
             }
@@ -47,7 +49,7 @@ struct WeatherManager {
         }
     }
     
-    func parseJSON(weatherData: Data) -> WeatherModel?{
+    func parseJSON(_ weatherData: Data) -> WeatherModel?{
         let decoder = JSONDecoder()
         do {
             let decodedData = try decoder.decode(WeatherData.self, from: weatherData)
@@ -66,6 +68,7 @@ struct WeatherManager {
             return weather
         } catch {
             print(error)
+            self.delegate?.didFailWithError(error: error)
             return nil
         }
     }

@@ -9,10 +9,6 @@
 import UIKit
 
 class WeatherViewController: UIViewController, UITextFieldDelegate, WeatherManagerDelegate {
-    func didUpdateWeather(weather: WeatherModel) {
-        print(weather.temperature)
-    }
-    
 
     @IBOutlet weak var conditionImageView: UIImageView!
     @IBOutlet weak var temperatureLabel: UILabel!
@@ -54,7 +50,15 @@ class WeatherViewController: UIViewController, UITextFieldDelegate, WeatherManag
         }
         searchTextField.text = ""
     }
+    
+    func didUpdateWeather(_ weatherManager :WeatherManager, weather: WeatherModel) {
+        print(weather.temperature)
+        temperatureLabel.text = "\(weather.temperature)"
+    }
+    
+    func didFailWithError(error: any Error) {
+        print(error)
+    }
 }
 
-// clima API key a5b8576992f8896ea47de3590c10ef2c
 
