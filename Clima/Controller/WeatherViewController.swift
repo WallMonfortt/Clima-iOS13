@@ -7,8 +7,9 @@
 //
 
 import UIKit
+import CoreLocation
 
-class WeatherViewController: UIViewController {
+class WeatherViewController: UIViewController{
 
     @IBOutlet weak var conditionImageView: UIImageView!
     @IBOutlet weak var temperatureLabel: UILabel!
@@ -16,10 +17,15 @@ class WeatherViewController: UIViewController {
     @IBOutlet weak var searchTextField: UITextField!
     
     var weatherManager = WeatherManager()
+    let lManager = CLLocationManager()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        lManager.delegate = self
         // Do any additional setup after loading the view.
+        lManager.requestWhenInUseAuthorization() //This is for request the proper permissions to get location data from the phone
+        lManager.requestLocation()
+
         weatherManager.delegate = self
         searchTextField.delegate = self
     }
@@ -71,5 +77,22 @@ extension WeatherViewController: WeatherManagerDelegate {
     
     func didFailWithError(error: any Error) {
         print(error)
+    }
+}
+
+//MARK: - LocationManagerDelegate
+
+extension WeatherViewController: CLLocationManagerDelegate {
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        if let location = locations.last {
+            print("Location data received.")
+            print(location)
+            let lat = location.coordinate.latitude
+            let lon = location.coordinate.longitude
+            print("the latitude is \(lat) and the longitude is \(lon)")
+        }
+    }
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        print("Failed to get users location.")
     }
 }
