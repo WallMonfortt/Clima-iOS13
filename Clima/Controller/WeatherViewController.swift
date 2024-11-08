@@ -57,7 +57,7 @@ extension WeatherViewController: UITextFieldDelegate {
     func textFieldDidEndEditing(_ textField: UITextField) {
         // use searchTextField. text to get the weather for that city
         if let city = searchTextField.text{
-            weatherManager.fetchWheather(cityName: city)
+            weatherManager.fetchWheather(cityName: city, lattitude: nil , longitude: nil)
         }
         searchTextField.text = ""
     }
@@ -90,6 +90,7 @@ extension WeatherViewController: CLLocationManagerDelegate {
             let lat = location.coordinate.latitude
             let lon = location.coordinate.longitude
             print("the latitude is \(lat) and the longitude is \(lon)")
+            weatherManager.fetchWheather(cityName: nil, lattitude: lat, longitude: lon)
         }
     }
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {

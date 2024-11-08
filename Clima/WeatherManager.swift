@@ -14,12 +14,19 @@ protocol WeatherManagerDelegate {
 }
 
 struct WeatherManager {
-    let weatherURL = "https://api.openweathermap.org/data/2.5/weather?appid=a5b8576992f8896ea47de3590c10ef2c&units=metric"
+    let weatherURL = "https://api.openweathermap.org/data/2.5/weather?appid=&units=metric"
     
     var delegate: WeatherManagerDelegate?
     
-    func fetchWheather(cityName: String){
-        let urlString = "\(weatherURL)&q=\(cityName)"
+    func fetchWheather(cityName: String?, lattitude: Double?, longitude: Double? ){
+        var urlString: String
+        
+        if cityName != nil {
+            urlString = "\(weatherURL)&q=\(cityName!)"
+        }
+        else{
+            urlString = "\(weatherURL)&lat=\(lattitude!)&lon=\(longitude!)"
+        }
         print(urlString)
         performRequest(with: urlString)
     }
