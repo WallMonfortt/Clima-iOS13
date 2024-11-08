@@ -29,6 +29,9 @@ class WeatherViewController: UIViewController{
         weatherManager.delegate = self
         searchTextField.delegate = self
     }
+    @IBAction func locationBtn(_ sender: UIButton) {
+        lManager.requestLocation()
+    }
 }
 
 //MARK: - UITextFieldDelegate
@@ -57,7 +60,7 @@ extension WeatherViewController: UITextFieldDelegate {
     func textFieldDidEndEditing(_ textField: UITextField) {
         // use searchTextField. text to get the weather for that city
         if let city = searchTextField.text{
-            weatherManager.fetchWheather(cityName: city, lattitude: nil , longitude: nil)
+            weatherManager.fetchWheather(cityName: city)
         }
         searchTextField.text = ""
     }
@@ -71,6 +74,7 @@ extension WeatherViewController: WeatherManagerDelegate {
         DispatchQueue.main.async{
             self.temperatureLabel.text = "\(weather.temperatureString)"
             self.conditionImageView.image = UIImage(systemName: weather.conditionName)
+            self.cityLabel.text = weather.cityName
         }
         
     }
@@ -87,10 +91,11 @@ extension WeatherViewController: CLLocationManagerDelegate {
         if let location = locations.last {
             print("Location data received.")
             print(location)
+            lManager.stopUpdatingLocation()
             let lat = location.coordinate.latitude
             let lon = location.coordinate.longitude
             print("the latitude is \(lat) and the longitude is \(lon)")
-            weatherManager.fetchWheather(cityName: nil, lattitude: lat, longitude: lon)
+            weatherManager.fetchWheather(latitude: lat, longitude: lon)
         }
     }
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
